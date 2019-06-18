@@ -1,11 +1,15 @@
 package com.app.colormatch
 
 import android.content.Intent
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.view.View
 import com.app.colormatch.sql.DatabaseHelper
 import kotlinx.android.synthetic.main.activity_login.*
+import java.lang.Exception
+import java.net.URL
 
 class LoginActivity : AppCompatActivity() {
 
@@ -20,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         init()
+        errorMessage.text = ""
 
         getLogin()
         if(login != null) {
@@ -27,10 +32,33 @@ class LoginActivity : AppCompatActivity() {
         }
 
         buttonLogin.setOnClickListener() {
-            if(tryToLogIn()) {
-                setLogin()
-                startMain()
+
+            class checkLogin(private var activity : LoginActivity) : AsyncTask<Void, Void, String>() {
+            override fun doInBackground(vararg params: Void?): String? {
+                val url = "http://colormatchserver.herokuapp.com/check/pswd?login=${loginLogin.text.toString()}&pswd=${loginPassword.text.toString()}"
+                try {
+                    return URL(url).readText()
+                } catch(e: Exception) {
+                    print("adasfds")
+                    return "noConnection"
+                }
             }
+
+            override fun onPostExecute(result: String?) {
+                if (result == "ok") {
+                    setLogin()
+                }
+                else {
+                    if (result == "noConnection") {
+                        errorMessage.text = "Can't connect with server"
+                    } else {
+                        errorMessage.text = "Wrong login or password"
+                    }
+                }
+            }
+            }
+            checkLogin(this).execute()
+
         }
 
         buttonRegister.setOnClickListener() {
@@ -42,33 +70,6 @@ class LoginActivity : AppCompatActivity() {
     private fun init() {
         dbHelper = DatabaseHelper(this@LoginActivity)
         builder = AlertDialog.Builder(this@LoginActivity)
-
-    }
-
-
-    private fun tryToLogIn() : Boolean {
-
-        login = loginLogin.text.toString()
-        pwd = loginPassword.text.toString()
-
-
-        if(pwd.isNullOrEmpty() or login.isNullOrEmpty()) {
-            makeDialog( "Pola nie mogą być puste")
-            return false
-        }
-
-        if(!dbHelper.checkPlayer(login.toString())){
-            makeDialog("Gracz nie istnieje")
-            return false
-        }
-
-        if(!dbHelper.checkPlayer(login.toString(), pwd.toString())){
-            makeDialog("Błędne hasło")
-            return false
-        }
-
-        return true
-
     }
 
 
@@ -81,12 +82,12 @@ class LoginActivity : AppCompatActivity() {
 
 
     fun getLogin() {
-        val shared  = this.getSharedPreferences("com.example.conf", 0)
+        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
         login = shared.getString("login", null)
     }
 
     fun setLogin() {
-        val shared  = this.getSharedPreferences("com.example.conf", 0)
+        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
         val editor = shared.edit()
         editor.putString("login", login)
         editor.apply()
@@ -94,7 +95,7 @@ class LoginActivity : AppCompatActivity() {
 
 
     fun startMain() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, StartGame::class.java)
         startActivity(intent)
         this.finish()
     }
