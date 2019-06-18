@@ -16,6 +16,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var dbHelper : DatabaseHelper
     private lateinit var  builder : AlertDialog.Builder
+    private lateinit var dialog : AlertDialog
     private var login : String? = null
     private var pwd : String? = null
 
@@ -32,14 +33,13 @@ class LoginActivity : AppCompatActivity() {
         }
 
         buttonLogin.setOnClickListener() {
-
+            makeDialog("Wait a moment. We're trying to connect to the server")
             class checkLogin(private var activity : LoginActivity) : AsyncTask<Void, Void, String>() {
             override fun doInBackground(vararg params: Void?): String? {
                 val url = "http://colormatchserver.herokuapp.com/check/pswd?login=${loginLogin.text.toString()}&pswd=${loginPassword.text.toString()}"
                 try {
                     return URL(url).readText()
                 } catch(e: Exception) {
-                    print("adasfds")
                     return "noConnection"
                 }
             }
@@ -47,18 +47,19 @@ class LoginActivity : AppCompatActivity() {
             override fun onPostExecute(result: String?) {
                 if (result == "ok") {
                     setLogin()
+                    startMain()
                 }
                 else {
+                    dialog?.dismiss()
                     if (result == "noConnection") {
-                        errorMessage.text = "Can't connect with server"
+                        makeDialog("Can't connect with the server")
                     } else {
-                        errorMessage.text = "Wrong login or password"
+                        makeDialog("Wrong login or password")
                     }
                 }
             }
             }
             checkLogin(this).execute()
-
         }
 
         buttonRegister.setOnClickListener() {
@@ -76,7 +77,7 @@ class LoginActivity : AppCompatActivity() {
     fun makeDialog(message: String) {
         builder.setMessage(message)
 
-        val dialog : AlertDialog = builder.create()
+        dialog = builder.create()
         dialog.show()
     }
 
