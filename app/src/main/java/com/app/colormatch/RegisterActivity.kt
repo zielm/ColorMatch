@@ -15,7 +15,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var dbHelper : DatabaseHelper
     private lateinit var  builder : AlertDialog.Builder
     private lateinit var  dialog : AlertDialog
-     var login : String? = null
+    private var login : String? = null
     private var pwd : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,8 +26,10 @@ class RegisterActivity : AppCompatActivity() {
 
         buttonRegister.setOnClickListener() {
             if(validate()) {
-                makeDialog("Wait a moment. We're trying to connect to the server")
-                class addPlayer(private var activity: RegisterActivity) : AsyncTask<Void, Void, String>() {
+//                makeDialog("Wait a moment. We're trying to connect to the server")
+
+
+                class addPlayer(private val activity: RegisterActivity) : AsyncTask<Void, Void, String>() {
                     override fun doInBackground(vararg params: Void?): String? {
                         val url = "http://colormatchserver.herokuapp.com/player/add?login=$login&password=$pwd"
                         try {
@@ -38,7 +40,7 @@ class RegisterActivity : AppCompatActivity() {
                     }
 
                     override fun onPostExecute(result: String?) {
-                        dialog?.dismiss()
+//                        dialog?.dismiss()
                         if (result=="ok"){
                             makeDialog("New account created. You can log in now")
                             startActivity(Intent(activity, LoginActivity::class.java))
@@ -48,7 +50,7 @@ class RegisterActivity : AppCompatActivity() {
                             if(result=="noConnection"){
                                 makeDialog("Can't connect with the server")
                             } else
-                                makeDialog("Login is alreaady being used")
+                                makeDialog("Login is already being used")
                         }
                     }
                 }
@@ -83,24 +85,6 @@ class RegisterActivity : AppCompatActivity() {
         return true
 
     }
-
-
-    fun createNewPlayer() {
-
-        val player = Player(login.toString(), pwd.toString())
-        dbHelper.addPlayer(player)
-
-        builder.setTitle("Sukces")
-        builder.setMessage("Stworzono nowe konto. Możesz się teraz zalogować!")
-        builder.setPositiveButton("OK") {dialog, which ->
-            this.finish()
-        }
-        val dialog : AlertDialog = builder.create()
-        dialog.show()
-
-    }
-
-
 
     fun makeDialog(message: String) {
         builder.setMessage(message)

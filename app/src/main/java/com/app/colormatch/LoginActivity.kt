@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         buttonLogin.setOnClickListener() {
-            makeDialog("Wait a moment. We're trying to connect to the server")
+//            makeDialog("Wait a moment. We're trying to connect to the server")
             class checkLogin(private var activity : LoginActivity) : AsyncTask<Void, Void, String>() {
             override fun doInBackground(vararg params: Void?): String? {
                 val url = "http://colormatchserver.herokuapp.com/check/pswd?login=${loginLogin.text.toString()}&pswd=${loginPassword.text.toString()}"
@@ -46,11 +46,11 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onPostExecute(result: String?) {
                 if (result == "ok") {
-                    setLogin()
+                    setLogin(loginLogin.text.toString())
                     startMain()
                 }
                 else {
-                    dialog?.dismiss()
+//                    dialog?.dismiss()
                     if (result == "noConnection") {
                         makeDialog("Can't connect with the server")
                     } else {
@@ -87,10 +87,10 @@ class LoginActivity : AppCompatActivity() {
         login = shared.getString("login", null)
     }
 
-    fun setLogin() {
+    fun setLogin(playerLogin: String) {
         val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
-        val editor = shared.edit()
-        editor.putString("login", login)
+        val editor = shared!!.edit()
+        editor.putString("login", playerLogin)
         editor.apply()
     }
 

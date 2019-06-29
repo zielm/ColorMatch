@@ -1,6 +1,7 @@
 package com.app.colormatch
 
 import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,12 +10,15 @@ import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
+import java.lang.Exception
+import java.net.URL
 import kotlin.math.ceil
 import kotlin.random.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var login : String
 
     val colors = listOf<String>("black", "blue", "green", "red") //"yellow", "orange", "purple", "pink", "brown")
     val colorsN = colors.size
@@ -27,8 +31,11 @@ class MainActivity : AppCompatActivity() {
     var leftLives = 3
     var points = 0
 
-    var timer: Timer = Timer(10000)
-    inner class Timer(millis: Long) : CountDownTimer(millis, 10000) {
+    var bestScoreFromServer = 0
+    var bestScore = 0
+
+    var timer: Timer = Timer(5000)
+    inner class Timer(millis: Long) : CountDownTimer(millis, 5000) {
         var timeLeft: Long = 0
 
         override fun onTick(timeUntilFinished: Long) {
@@ -46,29 +53,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        init()
-    }
+        getLogin()
 
-
-    fun init() {
-        buttonTrue.setOnClickListener() {
+        buttonYes.setOnClickListener() {
             checkAnswer(true)
         }
-        buttonFalse.setOnClickListener() {
+        buttonNo.setOnClickListener() {
             checkAnswer(false)
         }
-        buttonRefresh.setOnClickListener(){
-            getQuestion()
-            textResult.text = ""
+        buttonNewGame.setOnClickListener() {
+            newGame()
+        }
+        buttonReturn.setOnClickListener() {
+            timer.cancel()
+            this.finish()
         }
 
+        getRecord()
         newGame()
     }
+
 
     fun newGame() {
         leftLives = 3
         points = 0
         livesText.text = livesArray[leftLives]
+        textResult.text = "Your points: 0"
+        textRecord.text = "Your record: ${bestScore}"
+        buttonYes.isEnabled = true
+        buttonNo.isEnabled = true
         getQuestion()
     }
 
@@ -97,9 +110,9 @@ class MainActivity : AppCompatActivity() {
 
 
     fun addPoints(answeredTime: Long) {
-        var newPoints = ceil(answeredTime/1000.0)
+        val newPoints = ceil(answeredTime/1000.0/2)
         points += newPoints.toInt()
-        textResult.text = "$points"
+        textResult.text = "Your points: $points"
 
         getQuestion()
     }
@@ -120,6 +133,14 @@ class MainActivity : AppCompatActivity() {
 
 
     fun endGame() {
+        timer.cancel()
+        buttonYes.isEnabled = false
+        buttonNo.isEnabled = false
+        if (points > bestScore) {
+            setRecord(points)
+            sendResultsToServer()
+            textRecord.text = "Your NEW record: ${bestScore}"
+        }
         makeDialog()
     }
 
@@ -128,12 +149,81 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle("END GAME")
         builder.setMessage("Great job! Your result: $points")
 
-        builder.setPositiveButton("OK") {dialog, which ->
-            this.finish()
-        }
+        builder.setPositiveButton("OK") {_, _ -> }
+
         val dialog :AlertDialog = builder.create()
         dialog.show()
     }
 
+
+    fun getLogin() {
+        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
+        login = shared.getString("login", null)
+    }
+
+    fun getRecord() {
+        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
+        bestScore = shared.getInt("record", 0)
+
+        class BestScoreFromServer : AsyncTask<Void, Void, String>() {
+            override fun doInBackground(vararg params: Void?): String? {
+                val url = "http://colormatchserver.herokuapp.com/get/points?login=$login"
+                try {
+                    return URL(url).readText()
+                } catch (e: Exception) {
+                    return "noConnection"
+                }
+            }
+
+            override fun onPostExecute(result: String?) {
+                super.onPostExecute(result)
+
+                if (result != "err" && result != "noConnection") {
+                    val res = result?.split(" ")
+                    val get = res?.get(0)
+                    if (get != null) {
+                        bestScoreFromServer = get.toInt()
+                    }
+
+                    if (bestScoreFromServer > bestScore) {
+                        setRecord(bestScoreFromServer)
+                    }
+//                    val pointsDb = db.getPlayer(getLogin())?.points!!
+//                    if(pointsDb > points ) points = pointsDb
+//
+//                }else if(result == "noConnection"){
+//                    record = db.getPlayer(getLogin())?.record!!
+//                    points = db.getPlayer(getLogin())?.points!!
+
+                }
+            }
+        }
+        BestScoreFromServer().execute()
+
+    }
+
+    fun setRecord(newRecord: Int) {
+        bestScore = newRecord
+        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
+        val editor = shared!!.edit()
+        editor.putInt("record", bestScore)
+        editor.apply()
+        textRecord.text = "Your record: ${bestScore}"
+    }
+
+
+    fun sendResultsToServer() {
+        class SendResultsToServer : AsyncTask<Void, Void, String>() {
+            override fun doInBackground(vararg params: Void?): String? {
+                val url = "http://colormatchserver.herokuapp.com/add/points?login=$login&points=$bestScore"
+                try {
+                    return URL(url).readText()
+                } catch (e: Exception) {
+                    return "noConnection"
+                }
+            }
+        }
+        SendResultsToServer().execute()
+    }
 
 }

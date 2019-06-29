@@ -21,6 +21,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/description"
         />
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textResult"/>
+        <TextView
+                android:text="Your best score: "
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textRecord"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -37,10 +45,10 @@
         <TextView
                 android:gravity="center"
                 android:background="@android:color/white"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="5dp"
                 android:textSize="40sp"
                 android:layout_width="300dp"
-                android:layout_height="100dp"
+                android:layout_height="75dp"
                 android:id="@+id/textQuestion"
         />
         <TextView
@@ -49,35 +57,48 @@
                 android:layout_marginBottom="30dp"
                 android:textSize="40sp"
                 android:layout_width="300dp"
-                android:layout_height="100dp"
+                android:layout_height="75dp"
                 android:id="@+id/textAnswer"
         />
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" android:visibility="visible">
             <Button
                     android:text="Yes"
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
+                    android:layout_margin="2dp"
                     android:textSize="30sp"
-                    android:id="@+id/buttonTrue"
+                    android:id="@+id/buttonYes"
                     android:layout_weight="1"
             />
             <Button
                     android:text="No"
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
+                    android:layout_margin="2dp"
                     android:textSize="30sp"
-                    android:id="@+id/buttonFalse"
+                    android:id="@+id/buttonNo"
                     android:layout_weight="1"/>
         </LinearLayout>
-        <Button
-                android:text="Refresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/buttonRefresh"/>
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textResult"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+    <Button
+            android:text="New Game"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" android:id="@+id/buttonNewGame"/>
+    <Button
+            android:text="Return"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" android:id="@+id/buttonReturn"/>
     </LinearLayout>
 </RelativeLayout>
