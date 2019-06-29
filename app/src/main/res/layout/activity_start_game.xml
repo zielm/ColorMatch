@@ -21,6 +21,12 @@
                 android:layout_margin="30dp"
                 app:srcCompat="@drawable/colormatch_logo"
                 android:id="@+id/imageView2"/>
+        <TextView
+                android:layout_margin="30dp"
+                android:layout_width="300dp"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:layout_height="wrap_content" android:id="@+id/welcomeMessage"/>
         <Button
                 android:text="Start game"
                 android:layout_width="300dp"
@@ -29,5 +35,11 @@
                 android:text="Ranking"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content" android:id="@+id/buttonRanking"/>
-    </LinearLayout>
+          </LinearLayout>
+    <Button
+            android:text="Logout"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" android:id="@+id/buttonLogout"/>
 </RelativeLayout>
