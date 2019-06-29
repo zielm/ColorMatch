@@ -20,8 +20,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var login : String
 
-    val colors = listOf<String>("black", "blue", "green", "red") //"yellow", "orange", "purple", "pink", "brown")
-    val colorsN = colors.size
+    val colors = listOf<String>("blue", "green", "red", "black", "purple", "magenta", "cyan", "gray", "yellow")
+    var colorsN = 4
+    var nextLvlPoints = 20
     var correctAnswer: Boolean = false
 
     val redHeart = String(Character.toChars(0x2764))
@@ -77,6 +78,8 @@ class MainActivity : AppCompatActivity() {
     fun newGame() {
         leftLives = 3
         points = 0
+        colorsN = 4
+        nextLvlPoints = 20
         livesText.text = livesArray[leftLives]
         textResult.text = "Your points: 0"
         textRecord.text = "Your record: ${bestScore}"
@@ -89,7 +92,9 @@ class MainActivity : AppCompatActivity() {
     fun getQuestion() {
         val questionColor = colors[Random.nextInt(from = 0, until = colorsN)]
         val text = colors[Random.nextInt(from = 0, until = colorsN)]
-        val answerColor = colors[Random.nextInt(from = 0, until = colorsN)]
+        var answerColor = questionColor
+        if (Random.nextInt(from = 0, until = 4) != 0)
+            answerColor = colors[Random.nextInt(from = 0, until = colorsN)]
         correctAnswer = (questionColor == answerColor)
 
         textQuestion.text = questionColor
@@ -110,9 +115,16 @@ class MainActivity : AppCompatActivity() {
 
 
     fun addPoints(answeredTime: Long) {
-        val newPoints = ceil(answeredTime/1000.0/2)
+        val newPoints = ceil(answeredTime / 1000.0 / 2)
         points += newPoints.toInt()
         textResult.text = "Your points: $points"
+
+        if (points < 140) {
+            if (points > nextLvlPoints) {
+                nextLvlPoints += 20
+                colorsN += 1
+            }
+        }
 
         getQuestion()
     }
