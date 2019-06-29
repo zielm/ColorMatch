@@ -9,6 +9,8 @@ import android.os.CountDownTimer
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
 import android.widget.Toast
+import com.app.colormatch.sql.DatabaseHelper
+import com.app.colormatch.sql.Player
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 import java.net.URL
@@ -19,6 +21,7 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
 
     private lateinit var login : String
+    val dbHelper : DatabaseHelper = DatabaseHelper(this@MainActivity)
 
     val colors = listOf<String>("blue", "green", "red", "black", "purple", "magenta", "cyan", "gray", "yellow")
     var colorsN = 4
@@ -67,6 +70,9 @@ class MainActivity : AppCompatActivity() {
         }
         buttonReturn.setOnClickListener() {
             timer.cancel()
+            if (bestScoreFromServer < bestScore) {
+                sendResultsToServer()
+            }
             this.finish()
         }
 
@@ -200,13 +206,10 @@ class MainActivity : AppCompatActivity() {
                     if (bestScoreFromServer > bestScore) {
                         setRecord(bestScoreFromServer)
                     }
-//                    val pointsDb = db.getPlayer(getLogin())?.points!!
-//                    if(pointsDb > points ) points = pointsDb
-//
-//                }else if(result == "noConnection"){
-//                    record = db.getPlayer(getLogin())?.record!!
-//                    points = db.getPlayer(getLogin())?.points!!
 
+                    if (bestScoreFromServer < bestScore) {
+                        sendResultsToServer()
+                    }
                 }
             }
         }
@@ -221,6 +224,8 @@ class MainActivity : AppCompatActivity() {
         editor.putInt("record", bestScore)
         editor.apply()
         textRecord.text = "Your record: ${bestScore}"
+
+        dbHelper.updatePlayer(Player(login, bestScore))
     }
 
 
