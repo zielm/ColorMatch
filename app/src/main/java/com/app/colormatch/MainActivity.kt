@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun addPoints(answeredTime: Long) {
-        val newPoints = ceil(answeredTime / 1000.0 / 2)
+        val newPoints = ceil(answeredTime / 1000.0)
         points += newPoints.toInt()
         textResult.text = "Your points: $points"
 
@@ -180,8 +180,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getRecord() {
-        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
-        bestScore = shared.getInt("record", 0)
+        bestScore = dbHelper.getPoints(login)
 
         class BestScoreFromServer : AsyncTask<Void, Void, String>() {
             override fun doInBackground(vararg params: Void?): String? {
@@ -219,10 +218,6 @@ class MainActivity : AppCompatActivity() {
 
     fun setRecord(newRecord: Int) {
         bestScore = newRecord
-        val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
-        val editor = shared!!.edit()
-        editor.putInt("record", bestScore)
-        editor.apply()
         textRecord.text = "Your record: ${bestScore}"
 
         dbHelper.updatePlayer(Player(login, bestScore))
@@ -242,5 +237,6 @@ class MainActivity : AppCompatActivity() {
         }
         SendResultsToServer().execute()
     }
+
 
 }

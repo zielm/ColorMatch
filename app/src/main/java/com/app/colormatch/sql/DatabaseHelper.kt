@@ -57,10 +57,16 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context,
     fun updatePlayer(player: Player) {
         val db = this.writableDatabase
 
-        val values = ContentValues()
-        values.put(COL_RESULT, player.points)
+        val cursor = db.rawQuery("SELECT $COL_RESULT FROM $TABLE_NAME WHERE $COL_LOGIN = '${player.login}'", null)
+        cursor.moveToFirst()
+        val prevPoints = cursor.getInt(0)
 
-        db.update(TABLE_NAME, values, "$COL_LOGIN = '${player.login}'", null)
+        if (prevPoints < player.points) {
+            val values = ContentValues()
+            values.put(COL_RESULT, player.points)
+
+            db.update(TABLE_NAME, values, "$COL_LOGIN = '${player.login}'", null)
+        }
         db.close()
     }
 
@@ -81,7 +87,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context,
 
     fun getAllPlayers(): MutableList<Player> {
         val db = this.readableDatabase
-        val cursor =  db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+        val cursor =  db.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_RESULT DESC", null)
         var players = mutableListOf<Player>()
         if (cursor.moveToFirst()) {
             do {
@@ -94,6 +100,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context,
         }
 
         return players
+    }
+
+    fun getPoints(login: String): Int {
+        val db = this.readableDatabase
+
+        val cursor = db.rawQuery("SELECT $COL_RESULT FROM $TABLE_NAME WHERE $COL_LOGIN = '$login'", null)
+        cursor.moveToFirst()
+        return cursor.getInt(0)
     }
 
     fun getCount(): Int {
