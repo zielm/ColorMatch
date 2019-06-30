@@ -26,7 +26,7 @@
                     android:layout_height="match_parent" app:srcCompat="@drawable/colormatch_logo"
                     android:id="@+id/imageView4" android:layout_weight="1"/>
             <TextView
-                    android:text="Zaloguj się:"
+                    android:text="Log In:"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="36sp"
@@ -46,15 +46,15 @@
                 android:ems="10"
                 android:id="@+id/loginPassword"/>
         <Button
-                android:text="Zaloguj się"
+                android:text="Login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/buttonLogin"/>
         <TextView
-                android:text="Nie masz konta? Zarejestruj się!"
+                android:text="Create an account now!"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/descriptionRegister"/>
         <Button
-                android:text="Zarejestruj się"
+                android:text="Register"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/buttonRegister"/>
     </LinearLayout>
