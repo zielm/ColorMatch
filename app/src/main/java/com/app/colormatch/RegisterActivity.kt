@@ -24,6 +24,10 @@ class RegisterActivity : AppCompatActivity() {
 
         init()
 
+        buttonBack.setOnClickListener() {
+            this.finish()
+        }
+
         buttonRegister.setOnClickListener() {
             if(validate()) {
 //                makeDialog("Wait a moment. We're trying to connect to the server")
@@ -93,9 +97,6 @@ class RegisterActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        dialog?.dismiss()
-    }
+
 }
 

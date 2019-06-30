@@ -10,13 +10,9 @@
 
     <LinearLayout
             android:orientation="vertical"
+            android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp">
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FF0000"
-                android:id="@+id/errorMessage"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -33,6 +29,11 @@
                     android:layout_weight="4"
                     android:id="@+id/descriptionLogin"/>
         </LinearLayout>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF0000"
+                android:id="@+id/errorMessage"/>
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,15 +48,19 @@
                 android:id="@+id/loginPassword"/>
         <Button
                 android:text="Login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/buttonLogin"/>
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="30dp"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"  android:id="@+id/buttonLogin"/>
         <TextView
-                android:text="Create an account now!"
+                android:text="You don't have an account? Create it now!"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/descriptionRegister"/>
         <Button
                 android:text="Register"
-                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content" android:id="@+id/buttonRegister"/>
     </LinearLayout>
 </RelativeLayout>
