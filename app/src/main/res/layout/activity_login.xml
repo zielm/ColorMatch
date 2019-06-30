@@ -17,12 +17,22 @@
                 android:layout_height="wrap_content"
                 android:textColor="#FF0000"
                 android:id="@+id/errorMessage"/>
-        <TextView
-                android:text="Zaloguj się:"
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="36sp"
-                android:id="@+id/descriptionLogin"/>
+                android:layout_height="wrap_content">
+            <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" app:srcCompat="@drawable/colormatch_logo"
+                    android:id="@+id/imageView4" android:layout_weight="1"/>
+            <TextView
+                    android:text="Zaloguj się:"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="36sp"
+                    android:layout_weight="4"
+                    android:id="@+id/descriptionLogin"/>
+        </LinearLayout>
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

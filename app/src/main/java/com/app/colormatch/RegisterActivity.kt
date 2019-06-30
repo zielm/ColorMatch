@@ -92,5 +92,10 @@ class RegisterActivity : AppCompatActivity() {
         dialog = builder.create()
         dialog.show()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dialog?.dismiss()
+    }
 }
 
