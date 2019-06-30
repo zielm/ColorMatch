@@ -121,11 +121,11 @@ class MainActivity : AppCompatActivity() {
 
 
     fun addPoints(answeredTime: Long) {
-        val newPoints = ceil(answeredTime / 1000.0)
+        val newPoints = (answeredTime / 1000.0 / 2) * (nextLvlPoints/20)
         points += newPoints.toInt()
         textResult.text = "Your points: $points"
 
-        if (points < 140) {
+        if (points < 120) {
             if (points > nextLvlPoints) {
                 nextLvlPoints += 20
                 colorsN += 1
@@ -156,8 +156,10 @@ class MainActivity : AppCompatActivity() {
         buttonNo.isEnabled = false
         if (points > bestScore) {
             setRecord(points)
-            sendResultsToServer()
             textRecord.text = "Your NEW record: ${bestScore}"
+        }
+        if(bestScore > bestScoreFromServer) {
+            sendResultsToServer()
         }
         makeDialog()
     }
@@ -229,6 +231,7 @@ class MainActivity : AppCompatActivity() {
             override fun doInBackground(vararg params: Void?): String? {
                 val url = "http://colormatchserver.herokuapp.com/add/points?login=$login&points=$bestScore"
                 try {
+                    bestScoreFromServer = bestScore
                     return URL(url).readText()
                 } catch (e: Exception) {
                     return "noConnection"

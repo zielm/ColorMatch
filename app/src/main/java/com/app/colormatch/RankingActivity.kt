@@ -43,7 +43,6 @@ class RankingActivity : AppCompatActivity() {
             override fun onPostExecute(result: String?) {
                 if (result == "noConnection") {
                     println("Nie można połączyć z serwerem")
-                    players = dbHelper.getAllPlayers()
                 } else {
                     JsonReader(StringReader(result)).use { reader ->
                         reader.beginArray {
@@ -64,7 +63,13 @@ class RankingActivity : AppCompatActivity() {
     fun updateDatabase() {
         for (i in 0 until players.size) {
             if (dbHelper.checkIfPlayerExists(players[i])) {
-                dbHelper.updatePlayer(players[i])
+                val pointsInSQLite = dbHelper.getPoints(players[i].login.toString())
+                if(pointsInSQLite > players[i].points) {
+                    sendResultsToServer(players[i].login.toString(), pointsInSQLite)
+                }
+                else if (pointsInSQLite < players[i].points) {
+                    dbHelper.updatePlayer(players[i])
+                }
             }
             else
                 dbHelper.addPlayer(players[i])
@@ -77,6 +82,7 @@ class RankingActivity : AppCompatActivity() {
         var showPoints = ""
         var showNumbers = ""
         var limit = 10
+        players = dbHelper.getAllPlayers()
         if (players.size < 10) limit = players.size
         for (i in 0 until limit) {
             showNumbers += "${i + 1}. \t\t\n"
@@ -86,6 +92,26 @@ class RankingActivity : AppCompatActivity() {
         textView_number.text = showNumbers
         textView_names.text = showNames
         textView_points.text = showPoints
+    }
+
+    fun sendResultsToServer(login: String, bestScore: Int) {
+        class SendResultsToServer : AsyncTask<Void, Void, String>() {
+            override fun doInBackground(vararg params: Void?): String? {
+                val url = "http://colormatchserver.herokuapp.com/add/points?login=$login&points=$bestScore"
+                try {
+                    return URL(url).readText()
+                } catch (e: java.lang.Exception) {
+                    return "noConnection"
+                }
+            }
+        }
+        SendResultsToServer().execute()
+    }
+
+
+    fun getLogin() : String {
+       val shared  = this.getSharedPreferences("com.app.colormatch.conf", 0)
+       return shared.getString("login", null)
     }
 }
 

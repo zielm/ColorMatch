@@ -30,13 +30,11 @@ class StartGame : AppCompatActivity() {
         }
 
         buttonRanking.setOnClickListener() {
-            sendResultsToServer()
             val intent = Intent(this, RankingActivity::class.java)
             startActivity(intent)
         }
 
         buttonLogout.setOnClickListener() {
-            sendResultsToServer()
             logout()
         }
     }
@@ -56,26 +54,6 @@ class StartGame : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         this.finish()
-    }
-
-    fun sendResultsToServer() {
-        class SendResultsToServer : AsyncTask<Void, Void, String>() {
-            override fun doInBackground(vararg params: Void?): String? {
-                val url = "http://colormatchserver.herokuapp.com/add/points?login=${getLogin()}&points=${getRecord()}"
-                try {
-                    return URL(url).readText()
-                } catch (e: Exception) {
-                    return "noConnection"
-                }
-            }
-
-        }
-        SendResultsToServer().execute()
-    }
-
-    fun getRecord(): Int {
-        val shared = this.getSharedPreferences("com.app.colormatch.conf", 0)
-        return shared.getInt("record", 0)
     }
 
     fun saveDatabaseFromServer() {
